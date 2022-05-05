@@ -8,14 +8,17 @@ import {
   Stack,
   DisplayText,
   FooterHelp,
+  Badge,
   Link as PolarisLink,
+  Icon,
 } from "@shopify/polaris";
+import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
-    products(first: 15, sortKey: PRODUCT_TYPE) {
+    products(first: 20, sortKey: PRODUCT_TYPE) {
       edges {
         node {
           id
@@ -44,6 +47,7 @@ const GET_ALL_PRODUCTS = gql`
 
 export const HomePage = () => {
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
+  const navigateTo = useNavigate();
 
   if (loading) return <Loading />;
 
@@ -55,7 +59,24 @@ export const HomePage = () => {
   }
 
   return (
-    <Page fullWidth title="Products" divider>
+    <Page
+      fullWidth
+      title="Products"
+      divider
+      titleMetadata={<Badge status="success">Admin</Badge>}
+      primaryAction={{
+        content: "View Cart",
+        icon: <Icon source={CartMajor} />,
+        onAction: () => navigateTo(`/cart`),
+      }}
+      secondaryActions={[
+        {
+          content: "Create Product",
+          accessibilityLabel: "Secondary action label",
+          onAction: () => alert("Duplicate action"),
+        },
+      ]}
+    >
       <Layout>
         {data.products.edges.map((product) => {
           return (

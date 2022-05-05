@@ -9,7 +9,10 @@ import {
   Card,
   FooterHelp,
   Link,
+  Badge,
+  Icon,
 } from "@shopify/polaris";
+import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
 import React from "react";
 
@@ -44,7 +47,7 @@ export const ProductPage = () => {
   const navigateTo = useNavigate();
   const { loading, error, data } = useQuery(GET_PRODUCT, {
     variables: {
-      id: "gid://shopify/Product/" + id,
+      id: `gid://shopify/Product/${id}`,
     },
   });
 
@@ -62,9 +65,18 @@ export const ProductPage = () => {
       fullwidth
       title="Product Info"
       divider
+      titleMetadata={<Badge status="success">Admin</Badge>}
       primaryAction={{
-        content: "Add To Cart",
+        content: "View Cart",
+        icon: <Icon source={CartMajor} />,
+        onAction: () => navigateTo(`/cart`),
       }}
+      secondaryActions={[
+        {
+          content: "Back To Products",
+          onAction: () => navigateTo(`/`),
+        },
+      ]}
     >
       <Card sectioned title={data.product.title}>
         <Card.Section>
