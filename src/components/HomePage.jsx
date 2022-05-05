@@ -7,6 +7,8 @@ import {
   Button,
   Stack,
   DisplayText,
+  FooterHelp,
+  Link as PolarisLink,
 } from "@shopify/polaris";
 import { Loading } from "@shopify/app-bridge-react";
 import { Link } from "react-router-dom";
@@ -91,6 +93,13 @@ export const HomePage = () => {
           );
         })}
       </Layout>
+      <FooterHelp>
+        Copyright ©{" "}
+        <PolarisLink url="https://github.com/lazirpascual/graphql-shop">
+          GraphQL-Shop
+        </PolarisLink>{" "}
+        2022.
+      </FooterHelp>
     </Page>
   );
 };

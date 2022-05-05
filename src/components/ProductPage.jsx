@@ -1,6 +1,15 @@
 import { useQuery, gql } from "@apollo/client";
 import { useParams } from "react-router";
-import { Banner } from "@shopify/polaris";
+import { useNavigate } from "react-router-dom";
+import {
+  Banner,
+  DisplayText,
+  Page,
+  PageActions,
+  Card,
+  FooterHelp,
+  Link,
+} from "@shopify/polaris";
 import { Loading } from "@shopify/app-bridge-react";
 import React from "react";
 
@@ -10,12 +19,29 @@ const GET_PRODUCT = gql`
       id
       title
       description
+      images(first: 1) {
+        edges {
+          node {
+            id
+            originalSrc
+            altText
+          }
+        }
+      }
+      variants(first: 10) {
+        edges {
+          node {
+            price
+          }
+        }
+      }
     }
   }
 `;
 
 export const ProductPage = () => {
   const { id } = useParams();
+  const navigateTo = useNavigate();
   const { loading, error, data } = useQuery(GET_PRODUCT, {
     variables: {
       id: "gid://shopify/Product/" + id,
@@ -31,5 +57,50 @@ export const ProductPage = () => {
     );
   }
 
-  return <div>{data.product.title}</div>;
+  return (
+    <Page fullwidth title="Product Info" divider>
+      <Card sectioned title={data.product.title}>
+        <Card.Section>
+          <img
+            alt=""
+            width="400px"
+            height="320px"
+            style={{
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+            src={data.product.images.edges[0].node.originalSrc}
+          />
+        </Card.Section>
+        <Card.Section title="Price">
+          <Card.Subsection>
+            <DisplayText size="medium">
+              ${data.product.variants.edges[0].node.price}
+            </DisplayText>
+          </Card.Subsection>
+        </Card.Section>
+        <Card.Section title="Overview">
+          <Card.Subsection>{data.product.description}</Card.Subsection>
+        </Card.Section>
+      </Card>
+      <PageActions
+        primaryAction={{
+          content: "Add To Cart",
+        }}
+        secondaryActions={[
+          {
+            content: "Back To Products",
+            onAction: () => navigateTo(`/`),
+          },
+        ]}
+      />
+      <FooterHelp>
+        Copyright ©{" "}
+        <Link url="https://github.com/lazirpascual/graphql-shop">
+          GraphQL-Shop
+        </Link>{" "}
+        2022.
+      </FooterHelp>
+    </Page>
+  );
 };
