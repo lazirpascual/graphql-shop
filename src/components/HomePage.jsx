@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
-    products(first: 10) {
+    products(first: 15, sortKey: PRODUCT_TYPE) {
       edges {
         node {
           id
@@ -29,7 +29,7 @@ const GET_ALL_PRODUCTS = gql`
               }
             }
           }
-          variants(first: 10) {
+          variants(first: 1) {
             edges {
               node {
                 price
@@ -55,17 +55,12 @@ export const HomePage = () => {
   }
 
   return (
-    <Page fullWidth title="Products">
+    <Page fullWidth title="Products" divider>
       <Layout>
         {data.products.edges.map((product) => {
           return (
             <Layout.Section oneHalf key={product.node.id}>
-              <Card
-                sectioned
-                title={product.node.title}
-                description={product.node.variants.edges[0].node.price}
-                size="medium"
-              >
+              <Card sectioned title={product.node.title}>
                 <Link to={product.node.id}>
                   <Card.Section>
                     <img
@@ -80,7 +75,7 @@ export const HomePage = () => {
                     />
                   </Card.Section>
                 </Link>
-                <Card.Section>
+                <Card.Section title="price">
                   <Stack distribution="equalSpacing">
                     <DisplayText size="small">
                       ${product.node.variants.edges[0].node.price}{" "}

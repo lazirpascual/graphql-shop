@@ -19,7 +19,7 @@ const GET_PRODUCT = gql`
       id
       title
       description
-      images(first: 1) {
+      images(first: 3) {
         edges {
           node {
             id
@@ -58,18 +58,25 @@ export const ProductPage = () => {
   }
 
   return (
-    <Page fullwidth title="Product Info" divider>
+    <Page
+      fullwidth
+      title="Product Info"
+      divider
+      primaryAction={{
+        content: "Add To Cart",
+      }}
+    >
       <Card sectioned title={data.product.title}>
         <Card.Section>
           <img
             alt=""
             width="400px"
-            height="320px"
+            height="350px"
             style={{
               objectFit: "cover",
               objectPosition: "center",
             }}
-            src={data.product.images.edges[0].node.originalSrc}
+            src={data.product.images.edges[2].node.originalSrc}
           />
         </Card.Section>
         <Card.Section title="Price">
@@ -79,7 +86,7 @@ export const ProductPage = () => {
             </DisplayText>
           </Card.Subsection>
         </Card.Section>
-        <Card.Section title="Overview">
+        <Card.Section title="Description">
           <Card.Subsection>{data.product.description}</Card.Subsection>
         </Card.Section>
       </Card>
