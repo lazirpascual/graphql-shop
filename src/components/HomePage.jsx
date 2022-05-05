@@ -4,13 +4,12 @@ import {
   Layout,
   Banner,
   Card,
-  MediaCard,
   Button,
   Stack,
-  Subheading,
   DisplayText,
 } from "@shopify/polaris";
 import { Loading } from "@shopify/app-bridge-react";
+import { Link } from "react-router-dom";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
@@ -42,7 +41,7 @@ const GET_ALL_PRODUCTS = gql`
 `;
 
 export const HomePage = () => {
-  const { loading, error, data, refetch } = useQuery(GET_ALL_PRODUCTS);
+  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
 
   if (loading) return <Loading />;
 
@@ -58,25 +57,27 @@ export const HomePage = () => {
       <Layout>
         {data.products.edges.map((product) => {
           return (
-            <Layout.Section oneHalf>
+            <Layout.Section oneHalf key={product.node.id}>
               <Card
                 sectioned
                 title={product.node.title}
                 description={product.node.variants.edges[0].node.price}
                 size="medium"
               >
-                <Card.Section>
-                  <img
-                    alt=""
-                    width="400px"
-                    height="320px"
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: "center",
-                    }}
-                    src={product.node.images.edges[0].node.originalSrc}
-                  />
-                </Card.Section>
+                <Link to={product.node.id}>
+                  <Card.Section>
+                    <img
+                      alt=""
+                      width="400px"
+                      height="320px"
+                      style={{
+                        objectFit: "cover",
+                        objectPosition: "center",
+                      }}
+                      src={product.node.images.edges[0].node.originalSrc}
+                    />
+                  </Card.Section>
+                </Link>
                 <Card.Section>
                   <Stack distribution="equalSpacing">
                     <DisplayText size="small">

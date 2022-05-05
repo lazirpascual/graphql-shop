@@ -14,23 +14,36 @@ import { AppProvider as PolarisProvider } from "@shopify/polaris";
 import translations from "@shopify/polaris/locales/en.json";
 import "@shopify/polaris/build/esm/styles.css";
 
+import { Route, Routes } from "react-router";
+import { BrowserRouter } from "react-router-dom";
 import { HomePage } from "./components/HomePage";
+import { ProductPage } from "./components/ProductPage";
 
 export default function App() {
   return (
-    <PolarisProvider i18n={translations}>
-      <AppBridgeProvider
-        config={{
-          apiKey: process.env.SHOPIFY_API_KEY,
-          host: new URL(location).searchParams.get("host"),
-          forceRedirect: true,
-        }}
-      >
-        <MyProvider>
-          <HomePage />
-        </MyProvider>
-      </AppBridgeProvider>
-    </PolarisProvider>
+    <BrowserRouter>
+      <PolarisProvider i18n={translations}>
+        <AppBridgeProvider
+          config={{
+            apiKey: process.env.SHOPIFY_API_KEY,
+            host: new URL(location).searchParams.get("host"),
+            forceRedirect: true,
+          }}
+        >
+          <MyProvider>
+            <Routes>
+              <Route strict exact path="/" element={<HomePage />} />
+              <Route
+                strict
+                exact
+                path="/gid://shopify/Product/:id"
+                element={<ProductPage />}
+              />
+            </Routes>
+          </MyProvider>
+        </AppBridgeProvider>
+      </PolarisProvider>
+    </BrowserRouter>
   );
 }
 
