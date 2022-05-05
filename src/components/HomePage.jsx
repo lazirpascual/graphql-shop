@@ -1,84 +1,95 @@
+import { useQuery, gql } from "@apollo/client";
 import {
-  Card,
   Page,
   Layout,
-  TextContainer,
-  Image,
+  Banner,
+  Card,
+  MediaCard,
+  Button,
   Stack,
-  Link,
-  Heading,
+  Subheading,
+  DisplayText,
 } from "@shopify/polaris";
+import { Loading } from "@shopify/app-bridge-react";
 
-import trophyImgUrl from "../assets/home-trophy.png";
+const GET_ALL_PRODUCTS = gql`
+  query GetAllProducts {
+    products(first: 10) {
+      edges {
+        node {
+          id
+          title
+          images(first: 1) {
+            edges {
+              node {
+                id
+                originalSrc
+                altText
+              }
+            }
+          }
+          variants(first: 10) {
+            edges {
+              node {
+                price
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
-import { ProductsCard } from "./ProductsCard";
+export const HomePage = () => {
+  const { loading, error, data, refetch } = useQuery(GET_ALL_PRODUCTS);
 
-export function HomePage() {
+  if (loading) return <Loading />;
+
+  if (error) {
+    console.warn(error);
+    return (
+      <Banner status="critical">There was an issue loading products.</Banner>
+    );
+  }
+
   return (
-    <Page fullWidth>
+    <Page fullWidth title="Products">
       <Layout>
-        <Layout.Section>
-          <Card sectioned>
-            <Stack
-              wrap={false}
-              spacing="extraTight"
-              distribution="trailing"
-              alignment="center"
-            >
-              <Stack.Item fill>
-                <TextContainer spacing="loose">
-                  <Heading>Nice work on building a Shopify app 🎉</Heading>
-                  <p>
-                    Your app is ready to explore! It contains everything you
-                    need to get started including the{" "}
-                    <Link url="https://polaris.shopify.com/" external>
-                      Polaris design system
-                    </Link>
-                    ,{" "}
-                    <Link url="https://shopify.dev/api/admin-graphql" external>
-                      Shopify Admin API
-                    </Link>
-                    , and{" "}
-                    <Link
-                      url="https://shopify.dev/apps/tools/app-bridge"
-                      external
-                    >
-                      App Bridge
-                    </Link>{" "}
-                    UI library and components.
-                  </p>
-                  <p>
-                    Ready to go? Start populating your app with some sample
-                    products to view and test in your store.{" "}
-                  </p>
-                  <p>
-                    Learn more about building out your app in{" "}
-                    <Link
-                      url="https://shopify.dev/apps/getting-started/add-functionality"
-                      external
-                    >
-                      this Shopify tutorial
-                    </Link>{" "}
-                    📚{" "}
-                  </p>
-                </TextContainer>
-              </Stack.Item>
-              <Stack.Item>
-                <div style={{ padding: "0 20px" }}>
-                  <Image
-                    source={trophyImgUrl}
-                    alt="Nice work on building a Shopify app"
-                    width={120}
+        {data.products.edges.map((product) => {
+          return (
+            <Layout.Section oneHalf>
+              <Card
+                sectioned
+                title={product.node.title}
+                description={product.node.variants.edges[0].node.price}
+                size="medium"
+              >
+                <Card.Section>
+                  <img
+                    alt=""
+                    width="400px"
+                    height="320px"
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: "center",
+                    }}
+                    src={product.node.images.edges[0].node.originalSrc}
                   />
-                </div>
-              </Stack.Item>
-            </Stack>
-          </Card>
-        </Layout.Section>
-        <Layout.Section secondary>
-          <ProductsCard />
-        </Layout.Section>
+                </Card.Section>
+                <Card.Section>
+                  <Stack distribution="equalSpacing">
+                    <DisplayText size="small">
+                      ${product.node.variants.edges[0].node.price}{" "}
+                    </DisplayText>
+                    <Button primary>Add To Cart</Button>
+                  </Stack>
+                </Card.Section>
+              </Card>
+            </Layout.Section>
+          );
+        })}
       </Layout>
     </Page>
   );
-}
+};
