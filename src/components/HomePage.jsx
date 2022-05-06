@@ -131,30 +131,35 @@ export const HomePage = ({ productIds, setProductIds }) => {
     hasPreviousPage: false,
   });
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
-  const [getNextPage, { data: nextData }] = useLazyQuery(GET_NEXT_PAGE);
-  const [getPrevPage, { data: prevData }] = useLazyQuery(GET_PREV_PAGE);
+  const [
+    getNextPage,
+    { loading: nextLoading, data: nextData, error: nextError },
+  ] = useLazyQuery(GET_NEXT_PAGE);
+  const [
+    getPrevPage,
+    { loading: prevLoading, error: prevError, data: prevData },
+  ] = useLazyQuery(GET_PREV_PAGE);
 
   useEffect(() => {
-    if (data) {
-      setProductData(data.products.edges);
-      setPageInfo(data.products.pageInfo);
-    }
+    setProductData(data?.products.edges);
+    setPageInfo(data?.products.pageInfo);
   }, [data]);
 
   useEffect(() => {
-    if (nextData) {
-      setProductData(nextData.products.edges);
-      setPageInfo(nextData.products.pageInfo);
-    }
-    if (prevData) {
-      setProductData(prevData.products.edges);
-      setPageInfo(prevData.products.pageInfo);
-    }
-  }, [nextData, prevData]);
+    console.log(nextData);
+    setProductData(nextData?.products.edges);
+    setPageInfo(nextData?.products.pageInfo);
+  }, [nextData]);
 
-  if (loading) return <Loading />;
+  useEffect(() => {
+    console.log(prevData);
+    setProductData(prevData?.products.edges);
+    setPageInfo(prevData?.products.pageInfo);
+  }, [prevData]);
 
-  if (error) {
+  if (loading || nextLoading || prevLoading) return <Loading />;
+
+  if (error || nextError || prevError) {
     console.warn(error);
     return (
       <Banner status="critical">There was an issue loading products.</Banner>
@@ -189,7 +194,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
         },
       ]}
       pagination={{
-        hasNext: pageInfo.hasNextPage,
+        hasNext: pageInfo?.hasNextPage,
         onNext: () => {
           getNextPage({
             variables: {
@@ -199,8 +204,9 @@ export const HomePage = ({ productIds, setProductIds }) => {
                 : "",
             },
           });
+          console.log("next");
         },
-        hasPrevious: pageInfo.hasPreviousPage,
+        hasPrevious: pageInfo?.hasPreviousPage,
         onPrevious: () => {
           getPrevPage({
             variables: {
@@ -208,6 +214,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
               before: productData.length ? productData[0].cursor : "",
             },
           });
+          console.log("prev");
         },
       }}
     >
@@ -249,7 +256,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
           <Stack distribution="trailing">
             <Pagination
               label="Next"
-              hasPrevious={pageInfo.hasPreviousPage}
+              hasPrevious={pageInfo?.hasPreviousPage}
               onPrevious={() => {
                 getPrevPage({
                   variables: {
@@ -258,7 +265,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
                   },
                 });
               }}
-              hasNext={pageInfo.hasNextPage}
+              hasNext={pageInfo?.hasNextPage}
               onNext={() => {
                 getNextPage({
                   variables: {
