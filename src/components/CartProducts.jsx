@@ -9,6 +9,7 @@ import {
 } from "@shopify/polaris";
 import { Loading } from "@shopify/app-bridge-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const GET_PRODUCTS_BY_ID = gql`
   query getProducts($ids: [ID!]!) {
@@ -45,6 +46,7 @@ export const CartProducts = ({ productIds, setProductIds }) => {
     variables: { ids: productIds },
   });
   const [selectedItems, setSelectedItems] = useState([]);
+  const navigateTo = useNavigate();
 
   if (loading) return <Loading />;
 
@@ -68,11 +70,12 @@ export const CartProducts = ({ productIds, setProductIds }) => {
             {
               content: "Delete",
               onAction: () => {
-                if (confirm("Are you sure you want to delete this product?")) {
+                confirm(
+                  "Are you sure you want to remove this product from the cart?"
+                ) &&
                   setProductIds(
                     productIds.filter((id) => !selectedItems.includes(id))
                   );
-                }
               },
             },
           ]}
@@ -95,6 +98,7 @@ export const CartProducts = ({ productIds, setProductIds }) => {
                 id={item.id}
                 media={media}
                 accessibilityLabel={`View details for ${item.title}`}
+                onClick={() => navigateTo(`/${item.id}`)}
               >
                 <Stack>
                   <Stack.Item fill>
