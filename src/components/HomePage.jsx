@@ -21,75 +21,7 @@ import { MediaPage } from "./MediaPage";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
-    products(first: 6, sortKey: PRODUCT_TYPE) {
-      edges {
-        cursor
-        node {
-          id
-          title
-          images(first: 2) {
-            edges {
-              node {
-                id
-                originalSrc
-                altText
-              }
-            }
-          }
-          variants(first: 1) {
-            edges {
-              node {
-                price
-              }
-            }
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
-
-const GET_NEXT_PAGE = gql`
-  query GetAllProducts($after: String!) {
-    products(first: 6, after: $after, sortKey: PRODUCT_TYPE) {
-      edges {
-        cursor
-        node {
-          id
-          title
-          images(first: 2) {
-            edges {
-              node {
-                id
-                originalSrc
-                altText
-              }
-            }
-          }
-          variants(first: 1) {
-            edges {
-              node {
-                price
-              }
-            }
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
-
-const GET_PREV_PAGE = gql`
-  query GetAllProducts($before: String!) {
-    products(last: 6, before: $before, sortKey: PRODUCT_TYPE) {
+    products(first: 20, sortKey: PRODUCT_TYPE) {
       edges {
         cursor
         node {
@@ -125,41 +57,11 @@ export const HomePage = ({ productIds, setProductIds }) => {
   const navigateTo = useNavigate();
   const [hasResults, setHasResults] = useState(false); // state for Product Banner (when adding to cart)
   const [productName, setProductName] = useState(""); // state for Product Name in Banner
-  const [productData, setProductData] = useState([]); // product data used for fetched GraphQL data
-  const [pageInfo, setPageInfo] = useState({
-    hasNextPage: false,
-    hasPreviousPage: false,
-  });
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
-  const [
-    getNextPage,
-    { loading: nextLoading, data: nextData, error: nextError },
-  ] = useLazyQuery(GET_NEXT_PAGE);
-  const [
-    getPrevPage,
-    { loading: prevLoading, error: prevError, data: prevData },
-  ] = useLazyQuery(GET_PREV_PAGE);
 
-  useEffect(() => {
-    setProductData(data?.products.edges);
-    setPageInfo(data?.products.pageInfo);
-  }, [data]);
+  if (loading) return <Loading />;
 
-  useEffect(() => {
-    console.log(nextData);
-    setProductData(nextData?.products.edges);
-    setPageInfo(nextData?.products.pageInfo);
-  }, [nextData]);
-
-  useEffect(() => {
-    console.log(prevData);
-    setProductData(prevData?.products.edges);
-    setPageInfo(prevData?.products.pageInfo);
-  }, [prevData]);
-
-  if (loading || nextLoading || prevLoading) return <Loading />;
-
-  if (error || nextError || prevError) {
+  if (error) {
     console.warn(error);
     return (
       <Banner status="critical">There was an issue loading products.</Banner>
@@ -194,33 +96,15 @@ export const HomePage = ({ productIds, setProductIds }) => {
         },
       ]}
       pagination={{
-        hasNext: pageInfo?.hasNextPage,
-        onNext: () => {
-          getNextPage({
-            variables: {
-              first: 6,
-              after: productData.length
-                ? productData[productData.length - 1].cursor
-                : "",
-            },
-          });
-          console.log("next");
-        },
-        hasPrevious: pageInfo?.hasPreviousPage,
-        onPrevious: () => {
-          getPrevPage({
-            variables: {
-              last: 6,
-              before: productData.length ? productData[0].cursor : "",
-            },
-          });
-          console.log("prev");
-        },
+        hasNext: true,
+        onNext: () => {},
+        hasPrevious: true,
+        onPrevious: () => {},
       }}
     >
       {bannerMarkup}
       <Layout>
-        {productData?.map((product) => {
+        {data?.products.edges.map((product) => {
           return (
             <Layout.Section oneHalf key={product.node.id}>
               <Card sectioned title={product.node.title}>
@@ -256,26 +140,10 @@ export const HomePage = ({ productIds, setProductIds }) => {
           <Stack distribution="trailing">
             <Pagination
               label="Next"
-              hasPrevious={pageInfo?.hasPreviousPage}
-              onPrevious={() => {
-                getPrevPage({
-                  variables: {
-                    last: 6,
-                    before: productData.length ? productData[0].cursor : "",
-                  },
-                });
-              }}
-              hasNext={pageInfo?.hasNextPage}
-              onNext={() => {
-                getNextPage({
-                  variables: {
-                    first: 6,
-                    after: productData.length
-                      ? productData[productData.length - 1].cursor
-                      : "",
-                  },
-                });
-              }}
+              hasPreviousPage
+              onPrevious={() => {}}
+              hasNext
+              onNext={() => {}}
             />
           </Stack>
         </Layout.Section>
