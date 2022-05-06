@@ -98,7 +98,9 @@ export const HomePage = ({ productIds, setProductIds }) => {
               <Card sectioned title={product.node.title}>
                 <Link to={product.node.id}>
                   <Card.Section>
-                    <MediaPage images={product.node.images} />
+                    <Stack alignment="center" distribution="center">
+                      <MediaPage images={product.node.images} />
+                    </Stack>
                   </Card.Section>
                 </Link>
                 <Card.Section title="price">

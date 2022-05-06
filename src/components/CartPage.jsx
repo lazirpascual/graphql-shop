@@ -9,7 +9,7 @@ export const CartPage = ({ productIds, setProductIds }) => {
   return (
     <Page
       fullwidth
-      title="Cart Items"
+      title="Shopping Cart"
       divider
       titleMetadata={<Badge status="success">Admin</Badge>}
     >

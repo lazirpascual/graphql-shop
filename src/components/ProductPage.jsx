@@ -11,6 +11,8 @@ import {
   Link,
   Badge,
   Icon,
+  Stack,
+  TextStyle,
 } from "@shopify/polaris";
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
@@ -22,6 +24,8 @@ const GET_PRODUCT = gql`
       id
       title
       description
+      productType
+      totalInventory
       images(first: 3) {
         edges {
           node {
@@ -92,16 +96,30 @@ export const ProductPage = ({ productIds, setProductIds }) => {
       {toastMarkup}
       <Card sectioned title={data.product.title}>
         <Card.Section>
-          <img
-            alt=""
-            width="400px"
-            height="350px"
-            style={{
-              objectFit: "cover",
-              objectPosition: "center",
-            }}
-            src={data.product.images.edges[2].node.originalSrc}
-          />
+          <Stack alignment="center" distribution="fill" wrap={true}>
+            <img
+              alt=""
+              width="400px"
+              height="350px"
+              style={{
+                objectFit: "cover",
+                objectPosition: "center",
+              }}
+              src={data.product.images.edges[2].node.originalSrc}
+            />
+            <Stack vertical={true}>
+              <TextStyle variation="strong">
+                Type: {data.product.productType}
+              </TextStyle>
+              <TextStyle
+                variation={
+                  data.product.totalInventory < 10 ? "negative" : "positive"
+                }
+              >
+                {data.product.totalInventory} in stock
+              </TextStyle>
+            </Stack>
+          </Stack>
         </Card.Section>
         <Card.Section title="Price">
           <Card.Subsection>

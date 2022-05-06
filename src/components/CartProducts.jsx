@@ -116,7 +116,7 @@ export const CartProducts = ({ productIds, setProductIds }) => {
         />
       ) : (
         <Banner status="info">
-          There are currently no products in the cart.
+          There are currently no products in this cart.
         </Banner>
       )}
     </Card>
