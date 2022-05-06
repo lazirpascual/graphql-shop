@@ -1,4 +1,4 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useLazyQuery } from "@apollo/client";
 import {
   Page,
   Layout,
@@ -11,17 +11,19 @@ import {
   Badge,
   Link as PolarisLink,
   Icon,
+  Pagination,
 } from "@shopify/polaris";
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MediaPage } from "./MediaPage";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
-    products(first: 20, sortKey: PRODUCT_TYPE) {
+    products(first: 6, sortKey: PRODUCT_TYPE) {
       edges {
+        cursor
         node {
           id
           title
@@ -43,22 +45,119 @@ const GET_ALL_PRODUCTS = gql`
           }
         }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
+
+const GET_NEXT_PAGE = gql`
+  query GetAllProducts($after: String!) {
+    products(first: 6, after: $after, sortKey: PRODUCT_TYPE) {
+      edges {
+        cursor
+        node {
+          id
+          title
+          images(first: 2) {
+            edges {
+              node {
+                id
+                originalSrc
+                altText
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                price
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
+
+const GET_PREV_PAGE = gql`
+  query GetAllProducts($before: String!) {
+    products(last: 6, before: $before, sortKey: PRODUCT_TYPE) {
+      edges {
+        cursor
+        node {
+          id
+          title
+          images(first: 2) {
+            edges {
+              node {
+                id
+                originalSrc
+                altText
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                price
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 `;
 
 export const HomePage = ({ productIds, setProductIds }) => {
-  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   const navigateTo = useNavigate();
-  const [hasResults, setHasResults] = useState(false);
-  const [productName, setProductName] = useState("");
+  const [hasResults, setHasResults] = useState(false); // state for Product Banner (when adding to cart)
+  const [productName, setProductName] = useState(""); // state for Product Name in Banner
+  const [productData, setProductData] = useState([]); // product data used for fetched GraphQL data
+  const [pageInfo, setPageInfo] = useState({
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
+  const [getNextPage, { data: nextData }] = useLazyQuery(GET_NEXT_PAGE);
+  const [getPrevPage, { data: prevData }] = useLazyQuery(GET_PREV_PAGE);
+
+  useEffect(() => {
+    if (data) {
+      setProductData(data.products.edges);
+      setPageInfo(data.products.pageInfo);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (nextData) {
+      setProductData(nextData.products.edges);
+      setPageInfo(nextData.products.pageInfo);
+    }
+    if (prevData) {
+      setProductData(prevData.products.edges);
+      setPageInfo(prevData.products.pageInfo);
+    }
+  }, [nextData, prevData]);
 
   if (loading) return <Loading />;
 
   if (error) {
     console.warn(error);
     return (
-      <Banner status="info">There are currently no items in the cart.</Banner>
+      <Banner status="critical">There was an issue loading products.</Banner>
     );
   }
 
@@ -89,10 +188,32 @@ export const HomePage = ({ productIds, setProductIds }) => {
           onAction: () => alert("Duplicate action"),
         },
       ]}
+      pagination={{
+        hasNext: pageInfo.hasNextPage,
+        onNext: () => {
+          getNextPage({
+            variables: {
+              first: 6,
+              after: productData.length
+                ? productData[productData.length - 1].cursor
+                : "",
+            },
+          });
+        },
+        hasPrevious: pageInfo.hasPreviousPage,
+        onPrevious: () => {
+          getPrevPage({
+            variables: {
+              last: 6,
+              before: productData.length ? productData[0].cursor : "",
+            },
+          });
+        },
+      }}
     >
       {bannerMarkup}
       <Layout>
-        {data.products.edges.map((product) => {
+        {productData?.map((product) => {
           return (
             <Layout.Section oneHalf key={product.node.id}>
               <Card sectioned title={product.node.title}>
@@ -124,6 +245,21 @@ export const HomePage = ({ productIds, setProductIds }) => {
             </Layout.Section>
           );
         })}
+        <Layout.Section>
+          <Stack distribution="trailing">
+            <Pagination
+              label="Next"
+              hasPrevious
+              onPrevious={() => {
+                console.log("Previous");
+              }}
+              hasNext
+              onNext={() => {
+                console.log("Next");
+              }}
+            />
+          </Stack>
+        </Layout.Section>
       </Layout>
       <FooterHelp>
         Copyright ©{" "}

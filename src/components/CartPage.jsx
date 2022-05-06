@@ -1,6 +1,12 @@
-import { useQuery, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
-import { Page, PageActions, Badge, Banner } from "@shopify/polaris";
+import {
+  Page,
+  PageActions,
+  Badge,
+  Banner,
+  FooterHelp,
+  Link,
+} from "@shopify/polaris";
 import { CartProducts } from "./CartProducts";
 import { useState } from "react";
 
@@ -45,6 +51,13 @@ export const CartPage = ({ productIds, setProductIds }) => {
           },
         ]}
       />
+      <FooterHelp>
+        Copyright ©{" "}
+        <Link url="https://github.com/lazirpascual/graphql-shop">
+          GraphQL-Shop
+        </Link>{" "}
+        2022.
+      </FooterHelp>
     </Page>
   );
 };

@@ -16,7 +16,6 @@ import {
   Spinner,
 } from "@shopify/polaris";
 import { CartMajor } from "@shopify/polaris-icons";
-import { Loading } from "@shopify/app-bridge-react";
 import { useState } from "react";
 
 const GET_PRODUCT = gql`
