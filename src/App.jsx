@@ -62,7 +62,12 @@ export default function App() {
                 strict
                 exact
                 path="/cart"
-                element={<CartPage productIds={productIds} />}
+                element={
+                  <CartPage
+                    productIds={productIds}
+                    setProductIds={setProductIds}
+                  />
+                }
               />
             </Routes>
           </MyProvider>

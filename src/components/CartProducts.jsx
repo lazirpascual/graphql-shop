@@ -8,6 +8,7 @@ import {
   Banner,
 } from "@shopify/polaris";
 import { Loading } from "@shopify/app-bridge-react";
+import { useState } from "react";
 
 const GET_PRODUCTS_BY_ID = gql`
   query getProducts($ids: [ID!]!) {
@@ -39,10 +40,11 @@ const GET_PRODUCTS_BY_ID = gql`
   }
 `;
 
-export const CartProducts = ({ productIds }) => {
+export const CartProducts = ({ productIds, setProductIds }) => {
   const { loading, error, data } = useQuery(GET_PRODUCTS_BY_ID, {
     variables: { ids: productIds },
   });
+  const [selectedItems, setSelectedItems] = useState([]);
 
   if (loading) return <Loading />;
 
@@ -60,6 +62,20 @@ export const CartProducts = ({ productIds }) => {
           showHeader
           resourceName={{ singular: "Product", plural: "Products" }}
           items={data.nodes}
+          selectedItems={selectedItems}
+          onSelectionChange={setSelectedItems}
+          promotedBulkActions={[
+            {
+              content: "Delete",
+              onAction: () => {
+                if (confirm("Are you sure you want to delete this product?")) {
+                  setProductIds(
+                    productIds.filter((id) => !selectedItems.includes(id))
+                  );
+                }
+              },
+            },
+          ]}
           renderItem={(item) => {
             const media = (
               <Thumbnail

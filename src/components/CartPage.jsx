@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Page, PageActions, Badge } from "@shopify/polaris";
 import { CartProducts } from "./CartProducts";
 
-export const CartPage = ({ productIds }) => {
+export const CartPage = ({ productIds, setProductIds }) => {
   const navigateTo = useNavigate();
 
   return (
@@ -13,7 +13,7 @@ export const CartPage = ({ productIds }) => {
       divider
       titleMetadata={<Badge status="success">Admin</Badge>}
     >
-      <CartProducts productIds={productIds} />
+      <CartProducts productIds={productIds} setProductIds={setProductIds} />
       <PageActions
         primaryAction={{
           content: "Complete Order",
