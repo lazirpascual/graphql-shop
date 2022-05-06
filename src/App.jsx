@@ -22,10 +22,7 @@ import { CartPage } from "./components/CartPage";
 import { useState } from "react";
 
 export default function App() {
-  const [productIds, setProductIds] = useState([
-    "gid://shopify/Product/7669003288803",
-    "gid://shopify/Product/7669003256035",
-  ]);
+  const [productIds, setProductIds] = useState([]);
 
   return (
     <BrowserRouter>

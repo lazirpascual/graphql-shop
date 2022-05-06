@@ -105,6 +105,9 @@ export const ProductPage = ({ productIds, setProductIds }) => {
       <PageActions
         primaryAction={{
           content: "Add To Cart",
+          onAction: () => {
+            setProductIds([...productIds, data.product.id]);
+          },
         }}
         secondaryActions={[
           {

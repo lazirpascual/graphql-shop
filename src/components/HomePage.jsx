@@ -54,7 +54,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
   if (error) {
     console.warn(error);
     return (
-      <Banner status="critical">There was an issue loading products.</Banner>
+      <Banner status="info">There are currently no items in the cart.</Banner>
     );
   }
 
@@ -101,7 +101,12 @@ export const HomePage = ({ productIds, setProductIds }) => {
                     <DisplayText size="small">
                       ${product.node.variants.edges[0].node.price}{" "}
                     </DisplayText>
-                    <Button primary onClick={() => {}}>
+                    <Button
+                      primary
+                      onClick={() => {
+                        setProductIds([...productIds, product.node.id]);
+                      }}
+                    >
                       Add To Cart
                     </Button>
                   </Stack>
