@@ -62,7 +62,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
     );
   }
 
-  const toastMarkup = hasResults && (
+  const bannerMarkup = hasResults && (
     <Banner
       title={`${productName} has been added to the cart!`}
       status="success"
@@ -90,7 +90,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
         },
       ]}
     >
-      {toastMarkup}
+      {bannerMarkup}
       <Layout>
         {data.products.edges.map((product) => {
           return (

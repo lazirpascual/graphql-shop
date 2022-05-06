@@ -13,6 +13,7 @@ import {
   Icon,
   Stack,
   TextStyle,
+  Spinner,
 } from "@shopify/polaris";
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
@@ -57,7 +58,12 @@ export const ProductPage = ({ productIds, setProductIds }) => {
   const [hasResults, setHasResults] = useState(false);
   const [productName, setProductName] = useState("");
 
-  if (loading) return <Loading />;
+  if (loading)
+    return (
+      <Stack alignment="fill" distribution="center" spacing="loose">
+        <Spinner size="large" />
+      </Stack>
+    );
 
   if (error) {
     console.warn(error);
@@ -66,7 +72,7 @@ export const ProductPage = ({ productIds, setProductIds }) => {
     );
   }
 
-  const toastMarkup = hasResults && (
+  const bannerMarkup = hasResults && (
     <Banner
       title={`${productName} has been added to the cart!`}
       status="success"
@@ -93,7 +99,7 @@ export const ProductPage = ({ productIds, setProductIds }) => {
         },
       ]}
     >
-      {toastMarkup}
+      {bannerMarkup}
       <Card sectioned title={data.product.title}>
         <Card.Section>
           <Stack alignment="center" distribution="fill" wrap={true}>
