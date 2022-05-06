@@ -16,6 +16,7 @@ import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { MediaPage } from "./MediaPage";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
@@ -24,7 +25,7 @@ const GET_ALL_PRODUCTS = gql`
         node {
           id
           title
-          images(first: 1) {
+          images(first: 2) {
             edges {
               node {
                 id
@@ -97,16 +98,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
               <Card sectioned title={product.node.title}>
                 <Link to={product.node.id}>
                   <Card.Section>
-                    <img
-                      alt=""
-                      width="400px"
-                      height="320px"
-                      style={{
-                        objectFit: "cover",
-                        objectPosition: "center",
-                      }}
-                      src={product.node.images.edges[0].node.originalSrc}
-                    />
+                    <MediaPage images={product.node.images} />
                   </Card.Section>
                 </Link>
                 <Card.Section title="price">
