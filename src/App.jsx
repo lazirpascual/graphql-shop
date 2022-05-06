@@ -18,7 +18,6 @@ import { Route, Routes } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { HomePage } from "./components/HomePage";
 import { ProductPage } from "./components/ProductPage";
-import { useState } from "react";
 import { CartPage } from "./components/CartPage";
 
 export default function App() {
