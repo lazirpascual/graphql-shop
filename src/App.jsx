@@ -19,8 +19,14 @@ import { BrowserRouter } from "react-router-dom";
 import { HomePage } from "./components/HomePage";
 import { ProductPage } from "./components/ProductPage";
 import { CartPage } from "./components/CartPage";
+import { useState } from "react";
 
 export default function App() {
+  const [productIds, setProductIds] = useState([
+    "gid://shopify/Product/7669003288803",
+    "gid://shopify/Product/7669003256035",
+  ]);
+
   return (
     <BrowserRouter>
       <PolarisProvider i18n={translations}>
@@ -33,14 +39,34 @@ export default function App() {
         >
           <MyProvider>
             <Routes>
-              <Route strict exact path="/" element={<HomePage />} />
+              <Route
+                strict
+                exact
+                path="/"
+                element={
+                  <HomePage
+                    productIds={productIds}
+                    setProductIds={setProductIds}
+                  />
+                }
+              />
               <Route
                 strict
                 exact
                 path="/gid://shopify/Product/:id"
-                element={<ProductPage />}
+                element={
+                  <ProductPage
+                    productIds={productIds}
+                    setProductIds={setProductIds}
+                  />
+                }
               />
-              <Route strict exact path="/cart" element={<CartPage />} />
+              <Route
+                strict
+                exact
+                path="/cart"
+                element={<CartPage productIds={productIds} />}
+              />
             </Routes>
           </MyProvider>
         </AppBridgeProvider>

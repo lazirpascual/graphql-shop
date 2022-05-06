@@ -42,7 +42,7 @@ const GET_PRODUCT = gql`
   }
 `;
 
-export const ProductPage = () => {
+export const ProductPage = ({ productIds, setProductIds }) => {
   const { id } = useParams();
   const navigateTo = useNavigate();
   const { loading, error, data } = useQuery(GET_PRODUCT, {

@@ -1,32 +1,36 @@
 import { useQuery, gql } from "@apollo/client";
 import {
   Thumbnail,
+  Stack,
   Card,
-  ResourceItem,
   ResourceList,
   TextStyle,
   Banner,
 } from "@shopify/polaris";
 import { Loading } from "@shopify/app-bridge-react";
 
-const GET_FIRST_DRAFT_ORDER = gql`
-  query GetAllDraftOrders {
-    draftOrders(first: 1) {
-      edges {
-        node {
-          id
-          totalPrice
-          lineItems(first: 10) {
-            edges {
-              node {
-                id
-                name
-                quantity
-                image {
-                  url
-                }
-                originalUnitPrice
-              }
+const GET_PRODUCTS_BY_ID = gql`
+  query getProducts($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        title
+        handle
+        descriptionHtml
+        id
+        images(first: 1) {
+          edges {
+            node {
+              id
+              originalSrc
+              altText
+            }
+          }
+        }
+        variants(first: 1) {
+          edges {
+            node {
+              price
+              id
             }
           }
         }
@@ -35,8 +39,10 @@ const GET_FIRST_DRAFT_ORDER = gql`
   }
 `;
 
-export const CartProducts = () => {
-  const { loading, error, data } = useQuery(GET_FIRST_DRAFT_ORDER);
+export const CartProducts = ({ productIds }) => {
+  const { loading, error, data } = useQuery(GET_PRODUCTS_BY_ID, {
+    variables: { ids: productIds },
+  });
 
   if (loading) return <Loading />;
 
@@ -49,25 +55,41 @@ export const CartProducts = () => {
 
   return (
     <Card>
-      <ResourceList
-        resourceName={{ singular: "product", plural: "products" }}
-        items={data.draftOrders.edges[0].node.lineItems.edges}
+      <ResourceList // Defines your resource list component
+        showHeader
+        resourceName={{ singular: "Product", plural: "Products" }}
+        items={data.nodes}
         renderItem={(item) => {
-          const { id, name, originalUnitPrice, quantity, image } = item.node;
-          const media = <Thumbnail source={image.url ? image.url : ""} />;
-
+          const media = (
+            <Thumbnail
+              source={
+                item.images.edges[0]
+                  ? item.images.edges[0].node.originalSrc
+                  : ""
+              }
+              alt={
+                item.images.edges[0] ? item.images.edges[0].node.altText : ""
+              }
+            />
+          );
+          const price = item.variants.edges[0].node.price;
           return (
-            <ResourceItem
-              id={id}
+            <ResourceList.Item
+              id={item.id}
               media={media}
-              accessibilityLabel={`View details for ${name}`}
+              accessibilityLabel={`View details for ${item.title}`}
             >
-              <h3>
-                <TextStyle variation="strong">{name}</TextStyle>
-              </h3>
-              <div>${originalUnitPrice}</div>
-              <div>QTY: {quantity}</div>
-            </ResourceItem>
+              <Stack>
+                <Stack.Item fill>
+                  <h3>
+                    <TextStyle variation="strong">{item.title}</TextStyle>
+                  </h3>
+                </Stack.Item>
+                <Stack.Item>
+                  <p>${price}</p>
+                </Stack.Item>
+              </Stack>
+            </ResourceList.Item>
           );
         }}
       />

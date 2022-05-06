@@ -45,49 +45,9 @@ const GET_ALL_PRODUCTS = gql`
   }
 `;
 
-const GET_FIRST_DRAFT_ORDER = gql`
-  query GetAllDraftOrders {
-    draftOrders(first: 1) {
-      edges {
-        node {
-          id
-          totalPrice
-          lineItems(first: 10) {
-            edges {
-              node {
-                id
-                name
-                quantity
-                image {
-                  url
-                }
-                originalUnitPrice
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-const UPDATE_DRAFT_ORDER = gql`
-  mutation DraftOrderUpdate($id: ID!, $input: DraftOrderInput!) {
-    draftOrderUpdate(id: $id, input: $input) {
-      draftOrder {
-        id
-      }
-    }
-  }
-`;
-
-export const HomePage = () => {
+export const HomePage = ({ productIds, setProductIds }) => {
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   const navigateTo = useNavigate();
-  const [fetchDraftOrder, { data: draftOrderData }] = useLazyQuery(
-    GET_FIRST_DRAFT_ORDER
-  );
-  const [updateDraftOrder] = useMutation(UPDATE_DRAFT_ORDER);
 
   if (loading) return <Loading />;
 
@@ -141,25 +101,7 @@ export const HomePage = () => {
                     <DisplayText size="small">
                       ${product.node.variants.edges[0].node.price}{" "}
                     </DisplayText>
-                    <Button
-                      primary
-                      onClick={() => {
-                        fetchDraftOrder();
-
-                        if (draftOrderData) {
-                          updateDraftOrder({
-                            variables: {
-                              id: draftOrderData.draftOrders.edges[0].node.id,
-                              input: {
-                                lineItems: [
-                                  { variantId: product.node.id, quantity: 1 },
-                                ],
-                              },
-                            },
-                          });
-                        }
-                      }}
-                    >
+                    <Button primary onClick={() => {}}>
                       Add To Cart
                     </Button>
                   </Stack>
