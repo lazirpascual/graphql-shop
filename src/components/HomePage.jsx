@@ -249,13 +249,25 @@ export const HomePage = ({ productIds, setProductIds }) => {
           <Stack distribution="trailing">
             <Pagination
               label="Next"
-              hasPrevious
+              hasPrevious={pageInfo.hasPreviousPage}
               onPrevious={() => {
-                console.log("Previous");
+                getPrevPage({
+                  variables: {
+                    last: 6,
+                    before: productData.length ? productData[0].cursor : "",
+                  },
+                });
               }}
-              hasNext
+              hasNext={pageInfo.hasNextPage}
               onNext={() => {
-                console.log("Next");
+                getNextPage({
+                  variables: {
+                    first: 6,
+                    after: productData.length
+                      ? productData[productData.length - 1].cursor
+                      : "",
+                  },
+                });
               }}
             />
           </Stack>
