@@ -36,6 +36,7 @@ export const CartPage = ({ productIds, setProductIds }) => {
       <CartProducts productIds={productIds} setProductIds={setProductIds} />
       <PageActions
         primaryAction={{
+          disabled: productIds.length > 0 ? false : true,
           content: "Complete Order",
           onAction: () => {
             if (confirm("Do you want to place this order?")) {

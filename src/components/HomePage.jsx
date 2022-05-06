@@ -98,7 +98,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
       pagination={{
         hasNext: true,
         onNext: () => {},
-        hasPrevious: true,
+        hasPrevious: false,
         onPrevious: () => {},
       }}
     >
@@ -140,7 +140,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
           <Stack distribution="trailing">
             <Pagination
               label="Next"
-              hasPreviousPage
+              hasPrevious={false}
               onPrevious={() => {}}
               hasNext
               onNext={() => {}}
