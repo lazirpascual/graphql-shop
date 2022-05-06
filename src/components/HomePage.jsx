@@ -1,4 +1,4 @@
-import { useQuery, gql, useLazyQuery, useMutation } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import {
   Page,
   Layout,
@@ -15,6 +15,7 @@ import {
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
@@ -48,6 +49,8 @@ const GET_ALL_PRODUCTS = gql`
 export const HomePage = ({ productIds, setProductIds }) => {
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   const navigateTo = useNavigate();
+  const [hasResults, setHasResults] = useState(false);
+  const [productName, setProductName] = useState("");
 
   if (loading) return <Loading />;
 
@@ -58,6 +61,15 @@ export const HomePage = ({ productIds, setProductIds }) => {
     );
   }
 
+  const toastMarkup = hasResults && (
+    <Banner
+      title={`${productName} has been added to the cart!`}
+      status="success"
+      action={{ content: "View Cart", onAction: () => navigateTo(`/cart`) }}
+      onDismiss={() => setHasResults(false)}
+    />
+  );
+
   return (
     <Page
       fullWidth
@@ -65,7 +77,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
       divider
       titleMetadata={<Badge status="success">Admin</Badge>}
       primaryAction={{
-        content: "View Cart",
+        content: `View Cart (${productIds.length})`,
         icon: <Icon source={CartMajor} />,
         onAction: () => navigateTo(`/cart`),
       }}
@@ -77,6 +89,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
         },
       ]}
     >
+      {toastMarkup}
       <Layout>
         {data.products.edges.map((product) => {
           return (
@@ -105,6 +118,8 @@ export const HomePage = ({ productIds, setProductIds }) => {
                       primary
                       onClick={() => {
                         setProductIds([...productIds, product.node.id]);
+                        setHasResults(true);
+                        setProductName(product.node.title);
                       }}
                     >
                       Add To Cart

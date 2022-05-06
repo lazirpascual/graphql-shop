@@ -14,7 +14,7 @@ import {
 } from "@shopify/polaris";
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
-import React from "react";
+import { useState } from "react";
 
 const GET_PRODUCT = gql`
   query GetProduct($id: ID!) {
@@ -50,6 +50,8 @@ export const ProductPage = ({ productIds, setProductIds }) => {
       id: `gid://shopify/Product/${id}`,
     },
   });
+  const [hasResults, setHasResults] = useState(false);
+  const [productName, setProductName] = useState("");
 
   if (loading) return <Loading />;
 
@@ -60,6 +62,15 @@ export const ProductPage = ({ productIds, setProductIds }) => {
     );
   }
 
+  const toastMarkup = hasResults && (
+    <Banner
+      title={`${productName} has been added to the cart!`}
+      status="success"
+      action={{ content: "View Cart", onAction: () => navigateTo(`/cart`) }}
+      onDismiss={() => setHasResults(false)}
+    />
+  );
+
   return (
     <Page
       fullwidth
@@ -67,7 +78,7 @@ export const ProductPage = ({ productIds, setProductIds }) => {
       divider
       titleMetadata={<Badge status="success">Admin</Badge>}
       primaryAction={{
-        content: "View Cart",
+        content: `View Cart (${productIds.length})`,
         icon: <Icon source={CartMajor} />,
         onAction: () => navigateTo(`/cart`),
       }}
@@ -78,6 +89,7 @@ export const ProductPage = ({ productIds, setProductIds }) => {
         },
       ]}
     >
+      {toastMarkup}
       <Card sectioned title={data.product.title}>
         <Card.Section>
           <img
@@ -107,6 +119,8 @@ export const ProductPage = ({ productIds, setProductIds }) => {
           content: "Add To Cart",
           onAction: () => {
             setProductIds([...productIds, data.product.id]);
+            setHasResults(true);
+            setProductName(data.product.title);
           },
         }}
         secondaryActions={[

@@ -71,7 +71,7 @@ export const CartProducts = ({ productIds, setProductIds }) => {
               content: "Delete",
               onAction: () => {
                 confirm(
-                  "Are you sure you want to remove this product from the cart?"
+                  "Are you sure you want to remove this product(s) from the cart?"
                 ) &&
                   setProductIds(
                     productIds.filter((id) => !selectedItems.includes(id))
