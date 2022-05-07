@@ -1,4 +1,4 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import {
   Page,
   Layout,
@@ -16,15 +16,19 @@ import {
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { MediaPage } from "./MediaPage";
 import { GET_ALL_PRODUCTS } from "../queries/graphql";
+import { ProductCreate } from "./ProductCreate";
 
 export const HomePage = ({ productIds, setProductIds }) => {
   const navigateTo = useNavigate();
+  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   const [hasResults, setHasResults] = useState(false); // state for Product Banner (when adding to cart)
   const [productName, setProductName] = useState(""); // state for Product Name in Banner
-  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
+
+  const [active, setActive] = useState(false);
+  const handleChange = useCallback(() => setActive(!active), [active]);
 
   if (loading) return <Loading />;
 
@@ -59,7 +63,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
         {
           content: "Create Product",
           accessibilityLabel: "Secondary action label",
-          onAction: () => alert("Duplicate action"),
+          onAction: handleChange,
         },
       ]}
       pagination={{
@@ -71,6 +75,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
     >
       {bannerMarkup}
       <Layout>
+        <ProductCreate active={active} handleChange={handleChange} />
         {data?.products.edges.map((product) => {
           return (
             <Layout.Section oneHalf key={product.node.id}>
