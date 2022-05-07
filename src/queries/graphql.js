@@ -8,6 +8,7 @@ const GET_ALL_PRODUCTS = gql`
         node {
           id
           title
+          totalInventory
           images(first: 2) {
             edges {
               node {

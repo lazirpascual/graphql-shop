@@ -101,31 +101,33 @@ export const HomePage = ({ productIds, setProductIds }) => {
                       ${product.node.variants.edges[0].node.price}{" "}
                     </DisplayText>
                     <Stack>
-                      <Button
-                        outline
-                        destructive
-                        size="slim"
-                        onClick={async () => {
-                          if (
-                            confirm(
-                              "Are you sure you want to delete this product?"
-                            )
-                          ) {
-                            await deleteProduct({
-                              variables: {
-                                input: { id: product.node.id },
-                              },
-                            });
+                      {product.node.totalInventory === 0 && (
+                        <Button
+                          outline
+                          destructive
+                          size="slim"
+                          onClick={async () => {
+                            if (
+                              confirm(
+                                "Are you sure you want to delete this product?"
+                              )
+                            ) {
+                              await deleteProduct({
+                                variables: {
+                                  input: { id: product.node.id },
+                                },
+                              });
 
-                            setBannerContent(
-                              `${product.node.title} has been deleted!`
-                            );
-                            setHasResults(true);
-                          }
-                        }}
-                      >
-                        X
-                      </Button>
+                              setBannerContent(
+                                `${product.node.title} has been deleted!`
+                              );
+                              setHasResults(true);
+                            }
+                          }}
+                        >
+                          Delete Product
+                        </Button>
+                      )}
                       <Button
                         size="slim"
                         primary
