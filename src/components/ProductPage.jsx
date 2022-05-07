@@ -83,7 +83,11 @@ export const ProductPage = ({ productIds, setProductIds }) => {
                 objectFit: "cover",
                 objectPosition: "center",
               }}
-              src={data.product.images.edges[2].node.originalSrc}
+              src={
+                data.product.images.edges[2]?.node.originalSrc
+                  ? data.product.images.edges[2].node.originalSrc
+                  : "https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png"
+              }
             />
             <Stack vertical={true}>
               <TextStyle variation="strong">

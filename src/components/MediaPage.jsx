@@ -15,9 +15,11 @@ export const MediaPage = ({ images }) => {
         objectPosition: "center",
       }}
       src={
-        imageHovered
-          ? images.edges[1].node.originalSrc
-          : images.edges[0].node.originalSrc
+        images.edges[0]?.node.originalSrc
+          ? imageHovered
+            ? images.edges[1].node.originalSrc
+            : images.edges[0].node.originalSrc
+          : "https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png"
       }
     />
   );

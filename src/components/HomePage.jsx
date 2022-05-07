@@ -25,7 +25,7 @@ export const HomePage = ({ productIds, setProductIds }) => {
   const navigateTo = useNavigate();
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   const [hasResults, setHasResults] = useState(false); // state for Product Banner (when adding to cart)
-  const [productName, setProductName] = useState(""); // state for Product Name in Banner
+  const [bannerContent, setBannerContent] = useState(""); // state for Product Name in Banner
 
   const [active, setActive] = useState(false);
   const handleChange = useCallback(() => setActive(!active), [active]);
@@ -41,9 +41,9 @@ export const HomePage = ({ productIds, setProductIds }) => {
 
   const bannerMarkup = hasResults && (
     <Banner
-      title={`${productName} has been added to the cart!`}
+      title={bannerContent}
       status="success"
-      action={{ content: "View Cart", onAction: () => navigateTo(`/cart`) }}
+      action={{ content: "View Cart", onAction: () => navigateTo("/cart") }}
       onDismiss={() => setHasResults(false)}
     />
   );
@@ -75,7 +75,12 @@ export const HomePage = ({ productIds, setProductIds }) => {
     >
       {bannerMarkup}
       <Layout>
-        <ProductCreate active={active} handleChange={handleChange} />
+        <ProductCreate
+          active={active}
+          handleChange={handleChange}
+          setHasResults={setHasResults}
+          setBannerContent={setBannerContent}
+        />
         {data?.products.edges.map((product) => {
           return (
             <Layout.Section oneHalf key={product.node.id}>
@@ -96,8 +101,10 @@ export const HomePage = ({ productIds, setProductIds }) => {
                       primary
                       onClick={() => {
                         setProductIds([...productIds, product.node.id]);
+                        setBannerContent(
+                          `${product.node.title} has been added to the cart!`
+                        );
                         setHasResults(true);
-                        setProductName(product.node.title);
                       }}
                     >
                       Add To Cart

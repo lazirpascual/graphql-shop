@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts {
-    products(first: 20, sortKey: PRODUCT_TYPE) {
+    products(first: 20, sortKey: CREATED_AT, reverse: true) {
       edges {
         cursor
         node {
@@ -92,4 +92,15 @@ const GET_PRODUCTS_BY_ID = gql`
   }
 `;
 
-export { GET_ALL_PRODUCTS, GET_PRODUCT, GET_PRODUCTS_BY_ID };
+const CREATE_PRODUCT = gql`
+  mutation createProduct($input: ProductInput!) {
+    productCreate(input: $input) {
+      product {
+        id
+        title
+      }
+    }
+  }
+`;
+
+export { GET_ALL_PRODUCTS, GET_PRODUCT, GET_PRODUCTS_BY_ID, CREATE_PRODUCT };
