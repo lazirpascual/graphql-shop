@@ -97,18 +97,24 @@ export const HomePage = ({ productIds, setProductIds }) => {
                     <DisplayText size="small">
                       ${product.node.variants.edges[0].node.price}{" "}
                     </DisplayText>
-                    <Button
-                      primary
-                      onClick={() => {
-                        setProductIds([...productIds, product.node.id]);
-                        setBannerContent(
-                          `${product.node.title} has been added to the cart!`
-                        );
-                        setHasResults(true);
-                      }}
-                    >
-                      Add To Cart
-                    </Button>
+                    <Stack>
+                      <Button outline destructive size="slim">
+                        X
+                      </Button>
+                      <Button
+                        size="slim"
+                        primary
+                        onClick={() => {
+                          setProductIds([...productIds, product.node.id]);
+                          setBannerContent(
+                            `${product.node.title} has been added to the cart!`
+                          );
+                          setHasResults(true);
+                        }}
+                      >
+                        Add To Cart
+                      </Button>
+                    </Stack>
                   </Stack>
                 </Card.Section>
               </Card>
