@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   Page,
   Layout,
@@ -18,12 +18,15 @@ import { Loading } from "@shopify/app-bridge-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { MediaPage } from "./MediaPage";
-import { GET_ALL_PRODUCTS } from "../queries/graphql";
+import { GET_ALL_PRODUCTS, DELETE_PRODUCT } from "../queries/graphql";
 import { ProductCreate } from "./ProductCreate";
 
 export const HomePage = ({ productIds, setProductIds }) => {
   const navigateTo = useNavigate();
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
+  const [deleteProduct] = useMutation(DELETE_PRODUCT, {
+    refetchQueries: [{ query: GET_ALL_PRODUCTS }],
+  });
   const [hasResults, setHasResults] = useState(false); // state for Product Banner (when adding to cart)
   const [bannerContent, setBannerContent] = useState(""); // state for Product Name in Banner
 
@@ -98,7 +101,29 @@ export const HomePage = ({ productIds, setProductIds }) => {
                       ${product.node.variants.edges[0].node.price}{" "}
                     </DisplayText>
                     <Stack>
-                      <Button outline destructive size="slim">
+                      <Button
+                        outline
+                        destructive
+                        size="slim"
+                        onClick={async () => {
+                          if (
+                            confirm(
+                              "Are you sure you want to delete this product?"
+                            )
+                          ) {
+                            await deleteProduct({
+                              variables: {
+                                input: { id: product.node.id },
+                              },
+                            });
+
+                            setBannerContent(
+                              `${product.node.title} has been deleted!`
+                            );
+                            setHasResults(true);
+                          }
+                        }}
+                      >
                         X
                       </Button>
                       <Button

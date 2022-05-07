@@ -103,4 +103,18 @@ const CREATE_PRODUCT = gql`
   }
 `;
 
-export { GET_ALL_PRODUCTS, GET_PRODUCT, GET_PRODUCTS_BY_ID, CREATE_PRODUCT };
+const DELETE_PRODUCT = gql`
+  mutation deleteProduct($input: ProductDeleteInput!) {
+    productDelete(input: $input) {
+      deletedProductId
+    }
+  }
+`;
+
+export {
+  GET_ALL_PRODUCTS,
+  GET_PRODUCT,
+  GET_PRODUCTS_BY_ID,
+  CREATE_PRODUCT,
+  DELETE_PRODUCT,
+};
