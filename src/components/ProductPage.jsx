@@ -1,4 +1,4 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,34 +17,7 @@ import {
 } from "@shopify/polaris";
 import { CartMajor } from "@shopify/polaris-icons";
 import { useState } from "react";
-
-const GET_PRODUCT = gql`
-  query GetProduct($id: ID!) {
-    product(id: $id) {
-      id
-      title
-      description
-      productType
-      totalInventory
-      images(first: 3) {
-        edges {
-          node {
-            id
-            originalSrc
-            altText
-          }
-        }
-      }
-      variants(first: 10) {
-        edges {
-          node {
-            price
-          }
-        }
-      }
-    }
-  }
-`;
+import { GET_PRODUCT } from "../queries/graphql";
 
 export const ProductPage = ({ productIds, setProductIds }) => {
   const { id } = useParams();

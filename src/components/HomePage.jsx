@@ -1,4 +1,4 @@
-import { useQuery, gql, useLazyQuery } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import {
   Page,
   Layout,
@@ -16,42 +16,9 @@ import {
 import { CartMajor } from "@shopify/polaris-icons";
 import { Loading } from "@shopify/app-bridge-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MediaPage } from "./MediaPage";
-
-const GET_ALL_PRODUCTS = gql`
-  query GetAllProducts {
-    products(first: 20, sortKey: PRODUCT_TYPE) {
-      edges {
-        cursor
-        node {
-          id
-          title
-          images(first: 2) {
-            edges {
-              node {
-                id
-                originalSrc
-                altText
-              }
-            }
-          }
-          variants(first: 1) {
-            edges {
-              node {
-                price
-              }
-            }
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
+import { GET_ALL_PRODUCTS } from "../queries/graphql";
 
 export const HomePage = ({ productIds, setProductIds }) => {
   const navigateTo = useNavigate();
